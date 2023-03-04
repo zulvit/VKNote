@@ -6,12 +6,16 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Chronometer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +23,7 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
     private MediaRecorder recorder;
     private MediaPlayer player;
+    private Chronometer chronometer;
     private String fileName;
     private boolean recordState;
     private boolean playerState;
@@ -41,36 +46,33 @@ public class MainActivity extends AppCompatActivity {
 
         fileName = getExternalCacheDir().getAbsolutePath();
         fileName += "/audiorecordtest.m4a";
-        Button buttonRecord = findViewById(R.id.button_record);
-        Button buttonPlay = findViewById(R.id.button_play);
+//        Button buttonRecord = findViewById(R.id.button_record);
+//        Button buttonPlay = findViewById(R.id.button_play);
+        FloatingActionButton floatingActionButton = findViewById(R.id.button_record);
+        chronometer = findViewById(R.id.chronometer);
+        chronometer.setFormat("Time: %s:%s:%s:%s");
         playerState = false;
         recordState = false;
 
-        buttonRecord.setOnClickListener(view -> {
-            if (!recordState) {
-                if (permissionToRecordAccepted) {
-                    recordStart();
+        floatingActionButton.setOnClickListener(view -> {
+                    if (!recordState) {
+                        if (permissionToRecordAccepted) {
+                            chronometer.start();
+                            recordStart();
+                        }
+                        recordState = true;
+                    } else {
+                        recordStop();
+                        recordState = false;
+                    }
                 }
-                recordState = true;
-            } else {
-                recordStop();
-                recordState = false;
-            }
-        });
-
-        buttonPlay.setOnClickListener(view -> {
-            if (!playerState) {
-                playStart();
-                playerState = true;
-            } else {
-                playStop();
-                playerState = false;
-            }
-        });
+        );
     }
 
     private void recordStart() {
         try {
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.start();
             Context context = getApplicationContext();
             String dirPath = context.getFilesDir().getAbsolutePath();
             File dir = new File(dirPath + "/notes");
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void recordStop() {
+        chronometer.stop();
         recorder.stop();
         recorder.release();
         recorder = null;
