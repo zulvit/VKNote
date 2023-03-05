@@ -52,7 +52,7 @@ public class PlayerActivity extends AppCompatActivity {
                 playStop();
             }
         });
-
+        playStart(dirPath);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
