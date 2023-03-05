@@ -3,7 +3,6 @@ package ru.zulvit.vknote;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -29,11 +28,8 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     private MediaRecorder recorder;
-    private MediaPlayer player;
     private Chronometer chronometer;
     private boolean recordState;
-    private boolean playerState;
-    private String dirPath;
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
@@ -54,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton floatingActionButton = findViewById(R.id.button_record);
         chronometer = findViewById(R.id.chronometer);
 
-        playerState = false;
         recordState = false;
 
         replaceFragment(new NotesFragment());
@@ -104,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void recordStart() {
         Context context = getApplicationContext();
-        dirPath = context.getFilesDir().getAbsolutePath() + "/notes/";
+        String dirPath = context.getFilesDir().getAbsolutePath() + "/notes/";
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -113,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
         String defaultTitleNote = year + "-" + month + "-" + day + "(" +
-                hour + ":" + minute + ":" + second + ")";
+                hour + "-" + minute + "-" + second + ")";
         try {
             chronometer.setBase(SystemClock.elapsedRealtime());
             chronometer.start();
@@ -145,23 +140,6 @@ public class MainActivity extends AppCompatActivity {
         recorder = null;
     }
 
-    private void playStart() {
-        player = new MediaPlayer();
-        try {
-            player.setDataSource(dirPath + "audioTest.m4a");
-            player.prepare();
-            player.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void playStop() {
-        player.stop();
-        player.release();
-        player = null;
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -179,11 +157,6 @@ public class MainActivity extends AppCompatActivity {
         if (recorder != null) {
             recorder.release();
             recorder = null;
-        }
-
-        if (player != null) {
-            player.release();
-            player = null;
         }
     }
 }

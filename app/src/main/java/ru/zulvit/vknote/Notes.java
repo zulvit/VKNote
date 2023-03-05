@@ -1,7 +1,5 @@
 package ru.zulvit.vknote;
 
-import java.io.File;
-
 public class Notes {
     String heading;
     String description;

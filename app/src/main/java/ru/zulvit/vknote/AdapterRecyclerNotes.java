@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class AdapterRecyclerNotes extends RecyclerView.Adapter<AdapterRecyclerNotes.CustomViewHolder> {
-    Context context;
+    private final Context context;
     static ArrayList<Notes> notesArrayList;
 
     public AdapterRecyclerNotes(Context context, ArrayList<Notes> notesArrayList) {
@@ -59,8 +59,8 @@ public class AdapterRecyclerNotes extends RecyclerView.Adapter<AdapterRecyclerNo
                 int adapterPosition = getAdapterPosition();
                 Log.d(AdapterRecyclerNotes.class.getName(), "long click" + notesArrayList.get(adapterPosition));
                 Intent intent = new Intent(itemView.getContext(), PlayerActivity.class);
-                intent.putExtra("note", notesArrayList.get(adapterPosition).heading);
-                intent.putExtra("note", notesArrayList.get(adapterPosition).description);
+                intent.putExtra("noteHeading", notesArrayList.get(adapterPosition).heading);
+                intent.putExtra("noteDescription", notesArrayList.get(adapterPosition).description);
                 itemView.getContext().startActivity(intent);
             });
 
