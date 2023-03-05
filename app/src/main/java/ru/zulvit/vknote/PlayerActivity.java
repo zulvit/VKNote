@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
@@ -23,6 +23,7 @@ public class PlayerActivity extends AppCompatActivity {
     private ImageButton buttonForward;
     private Chip speedChip;
     private SeekBar seekBar;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         Context context = getApplicationContext();
         String dirPath = context.getFilesDir().getAbsolutePath() + "/notes/" + header;
+
         buttonPlay.setOnClickListener(view -> {
             if (!playerState) {
                 playStart(dirPath);
@@ -50,10 +52,44 @@ public class PlayerActivity extends AppCompatActivity {
                 playStop();
             }
         });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (player != null && fromUser) {
+                    player.seekTo(progress * 1000);
+                }
+            }
+        });
+
+        PlayerActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (player != null) {
+                    int mCurrentPosition = player.getCurrentPosition() / 1000;
+                    seekBar.setProgress(mCurrentPosition);
+                }
+                handler.postDelayed(this, 1000);
+            }
+        });
+
+        playStart(dirPath);
+        seekBar.setMax(player.getDuration());
     }
 
     private void playStart(String dirPath) {
         playerState = true;
+
         player = new MediaPlayer();
         try {
             player.setDataSource(dirPath);
@@ -63,19 +99,19 @@ public class PlayerActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        seekBar.setMax(player.getDuration() / 1000); // where mFileDuration is mMediaPlayer.getDuration();
     }
 
     private void playStop() {
         playerState = false;
         player.stop();
-        player.release();
-        player = null;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         if (player != null) {
+            player.stop();
             player.release();
             player = null;
         }
