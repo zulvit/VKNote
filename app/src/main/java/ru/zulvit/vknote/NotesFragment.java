@@ -8,10 +8,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -31,7 +33,7 @@ public class NotesFragment extends Fragment {
     private String mParam2;
     private ArrayList<Notes> notesArrayList;
     private String[] notesHeading;
-    private int[] imageResourceId;
+    private String[] notesTitle;
     private RecyclerView recyclerView;
 
     public NotesFragment() {
@@ -85,34 +87,28 @@ public class NotesFragment extends Fragment {
     }
 
     private void dataInitialize() {
-        notesArrayList = new ArrayList<>();
-        notesHeading = new String[]{
-                "Test1",
-                "Test2",
-                "Test3",
-                "Test4",
-                "Test5",
-                "Test6",
-                "Test7",
-                "Test8",
-                "Test9",
-                "Test01"};
+        String path = getActivity().getFilesDir() + "/notes";
+        Log.d(NotesFragment.class.getName(), path);
+        File directory = new File(path);
+        File[] allNotes = directory.listFiles();
+        if (allNotes != null) {
+            notesArrayList = new ArrayList<>();
+            notesHeading = new String[allNotes.length];
+            for (int i = 0; i < allNotes.length; i++) {
+                Log.d(NotesFragment.class.getName(), allNotes[i].getName());
+                notesHeading[i] = allNotes[i].getName();
+            }
 
-        imageResourceId = new int[]{
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24,
-                R.drawable.speaker_notes_24};
+            notesTitle = new String[allNotes.length];
+            for (int i = 0; i < allNotes.length; i++) {
+                Log.d(NotesFragment.class.getName(), allNotes[i].getName());
+                notesTitle[i] = allNotes[i].getName();
+            }
 
-        for (int i = 0; i < notesHeading.length; i++) {
-            Notes notes = new Notes(notesHeading[i], imageResourceId[i]);
-            notesArrayList.add(notes);
+            for (int i = notesHeading.length - 1; i >= 0; i--) {
+                Notes notes = new Notes(notesHeading[i], notesTitle[i]);
+                notesArrayList.add(notes);
+            }
         }
     }
 }

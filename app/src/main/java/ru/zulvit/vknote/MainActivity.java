@@ -51,9 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-        Context context = getApplicationContext();
-        dirPath = context.getFilesDir().getAbsolutePath() + "/notes/";
-
         FloatingActionButton floatingActionButton = findViewById(R.id.button_record);
         chronometer = findViewById(R.id.chronometer);
 
@@ -95,15 +92,19 @@ public class MainActivity extends AppCompatActivity {
 
         bottomSheetView.findViewById(R.id.buttonSheetSave).setOnClickListener(view -> {
             Log.d("SAVE", "SAVING");
+            replaceFragment(new NotesFragment());
         });
 
         bottomSheetView.findViewById(R.id.buttonSheetCancel).setOnClickListener(view -> {
             bottomSheetDialog.cancel();
             Log.d("CANCEL", "CANCELING");
+            replaceFragment(new NotesFragment());
         });
     }
 
     private void recordStart() {
+        Context context = getApplicationContext();
+        dirPath = context.getFilesDir().getAbsolutePath() + "/notes/";
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(MainActivity.class.getName(), dirPath);
                 Log.d(MainActivity.class.getName(), "note dir created");
             }
-            File file = new File(dir, defaultTitleNote + "note.m4a");
+            File file = new File(dir, defaultTitleNote + ".m4a");
             recorder = new MediaRecorder();
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);

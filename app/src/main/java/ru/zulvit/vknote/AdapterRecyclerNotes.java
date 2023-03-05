@@ -1,6 +1,8 @@
 package ru.zulvit.vknote;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,17 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.imageview.ShapeableImageView;
-
 import java.util.ArrayList;
 
 public class AdapterRecyclerNotes extends RecyclerView.Adapter<AdapterRecyclerNotes.CustomViewHolder> {
     Context context;
-    ArrayList<Notes> notesArrayList;
+    static ArrayList<Notes> notesArrayList;
 
     public AdapterRecyclerNotes(Context context, ArrayList<Notes> notesArrayList) {
         this.context = context;
-        this.notesArrayList = notesArrayList;
+        AdapterRecyclerNotes.notesArrayList = notesArrayList;
     }
 
     @NonNull
@@ -31,24 +31,44 @@ public class AdapterRecyclerNotes extends RecyclerView.Adapter<AdapterRecyclerNo
 
     @Override
     public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
-        Notes notes = notesArrayList.get(position);
-        holder.noteHeading.setText(notes.heading);
-        holder.titleImage.setImageResource(notes.titleImage);
+        if (position != RecyclerView.NO_POSITION) {
+            Notes notes = notesArrayList.get(position);
+            holder.noteHeading.setText(notes.heading);
+            holder.noteDescription.setText(notes.description);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return notesArrayList.size();
+        if (notesArrayList != null) {
+            return notesArrayList.size();
+        } else {
+            return 0;
+        }
     }
 
     public static class CustomViewHolder extends RecyclerView.ViewHolder {
-        ShapeableImageView titleImage;
         TextView noteHeading;
+        TextView noteDescription;
 
         public CustomViewHolder(@NonNull View itemView) {
             super(itemView);
-            titleImage = itemView.findViewById(R.id.title_image);
-            noteHeading = itemView.findViewById(R.id.noteHeading);
+            noteDescription = itemView.findViewById(R.id.tvFilename);
+            noteHeading = itemView.findViewById(R.id.tvMeta);
+            itemView.setOnClickListener(view -> {
+                int adapterPosition = getAdapterPosition();
+                Log.d(AdapterRecyclerNotes.class.getName(), "long click" + notesArrayList.get(adapterPosition));
+                Intent intent = new Intent(itemView.getContext(), PlayerActivity.class);
+                intent.putExtra("note", notesArrayList.get(adapterPosition).heading);
+                intent.putExtra("note", notesArrayList.get(adapterPosition).description);
+                itemView.getContext().startActivity(intent);
+            });
+
+            itemView.setOnLongClickListener(view -> {
+                int adapterPosition = getAdapterPosition();
+                Log.d(AdapterRecyclerNotes.class.getName(), "long click" + adapterPosition);
+                return false;
+            });
         }
     }
 }
