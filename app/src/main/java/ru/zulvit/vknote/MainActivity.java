@@ -8,25 +8,29 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Button;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Chronometer;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     private MediaRecorder recorder;
     private MediaPlayer player;
     private Chronometer chronometer;
-    private String fileName;
     private boolean recordState;
     private boolean playerState;
+    private String dirPath;
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
@@ -44,13 +48,12 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-        fileName = getExternalCacheDir().getAbsolutePath();
-        fileName += "/audiorecordtest.m4a";
-//        Button buttonRecord = findViewById(R.id.button_record);
-//        Button buttonPlay = findViewById(R.id.button_play);
+        Context context = getApplicationContext();
+        dirPath = context.getFilesDir().getAbsolutePath() + "/notes/";
+
         FloatingActionButton floatingActionButton = findViewById(R.id.button_record);
         chronometer = findViewById(R.id.chronometer);
-        chronometer.setFormat("Time: %s:%s:%s:%s");
+
         playerState = false;
         recordState = false;
 
@@ -64,22 +67,50 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         recordStop();
                         recordState = false;
+                        showBottomSheet();
                     }
                 }
         );
     }
 
+    private void showBottomSheet() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this);
+        View bottomSheetView = LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.bottom_sheet,
+                        (LinearLayout) findViewById(R.id.bottomSheetContainer));
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
+
+        bottomSheetView.findViewById(R.id.buttonSheetSave).setOnClickListener(view -> {
+            Log.d("SAVE", "SAVING");
+        });
+
+        bottomSheetView.findViewById(R.id.buttonSheetCancel).setOnClickListener(view -> {
+            bottomSheetDialog.cancel();
+            Log.d("CANCEL", "CANCELING");
+        });
+    }
+
     private void recordStart() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        String defaultTitleNote = year + "-" + month + "-" + day + "(" +
+                hour + ":" + minute + ":" + second + ")";
         try {
             chronometer.setBase(SystemClock.elapsedRealtime());
             chronometer.start();
-            Context context = getApplicationContext();
-            String dirPath = context.getFilesDir().getAbsolutePath();
-            File dir = new File(dirPath + "/notes");
+            File dir = new File(dirPath);
             if (dir.mkdirs()) {
-                Log.d(MainActivity.class.getName(), "note dir created.");
+                dirPath += defaultTitleNote;
+                Log.d(MainActivity.class.getName(), dirPath);
+                Log.d(MainActivity.class.getName(), "note dir created");
             }
-            File file = new File(dir, "audioTest.m4a");
+            File file = new File(dir, defaultTitleNote + "note.m4a");
             recorder = new MediaRecorder();
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -89,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
             recorder.setOutputFile(file.getAbsolutePath());
             recorder.prepare();
             recorder.start();
-            Log.d(MainActivity.class.getName(), fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     private void playStart() {
         player = new MediaPlayer();
         try {
-            player.setDataSource(fileName);
+            player.setDataSource(dirPath + "audioTest.m4a");
             player.prepare();
             player.start();
         } catch (IOException e) {
@@ -140,6 +170,14 @@ public class MainActivity extends AppCompatActivity {
         if (player != null) {
             player.release();
             player = null;
+        }
+    }
+
+    public void btnClicker(View view) {
+        if (!playerState) {
+            playStart();
+        } else {
+            playStop();
         }
     }
 }
