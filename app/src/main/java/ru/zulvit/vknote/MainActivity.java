@@ -16,6 +16,9 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         playerState = false;
         recordState = false;
 
+        replaceFragment(new NotesFragment());
+
         floatingActionButton.setOnClickListener(view -> {
                     if (!recordState) {
                         if (permissionToRecordAccepted) {
@@ -71,6 +76,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.commit();
     }
 
     private void showBottomSheet() {
@@ -144,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void playStop() {
+        player.stop();
         player.release();
         player = null;
     }
@@ -170,14 +183,6 @@ public class MainActivity extends AppCompatActivity {
         if (player != null) {
             player.release();
             player = null;
-        }
-    }
-
-    public void btnClicker(View view) {
-        if (!playerState) {
-            playStart();
-        } else {
-            playStop();
         }
     }
 }
