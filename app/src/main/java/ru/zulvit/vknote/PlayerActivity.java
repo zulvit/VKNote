@@ -3,6 +3,7 @@ package ru.zulvit.vknote;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -21,9 +22,11 @@ public class PlayerActivity extends AppCompatActivity {
     private ImageButton buttonPlay;
     private ImageButton buttonBackward;
     private ImageButton buttonForward;
-    private Chip speedChip;
+    private Chip chip;
     private SeekBar seekBar;
     private Handler handler = new Handler();
+    private static int JUMP_VALUE = 1000;
+    private static float playSpeed = 1f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,7 @@ public class PlayerActivity extends AppCompatActivity {
         buttonPlay = findViewById(R.id.btnPlay);
         buttonBackward = findViewById(R.id.btnBackward);
         buttonForward = findViewById(R.id.btnForward);
-        speedChip = findViewById(R.id.chip);
+        chip = findViewById(R.id.chip);
         seekBar = findViewById(R.id.seekBar);
 
         Intent intent = getIntent();
@@ -45,14 +48,6 @@ public class PlayerActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         String dirPath = context.getFilesDir().getAbsolutePath() + "/notes/" + header;
 
-        buttonPlay.setOnClickListener(view -> {
-            if (!playerState) {
-                playStart(dirPath);
-            } else {
-                playStop();
-            }
-        });
-        playStart(dirPath);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -83,8 +78,33 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
 
+        buttonPlay.setOnClickListener(view -> {
+            if (!playerState) {
+                playStart(dirPath);
+            } else {
+                playStop();
+            }
+        });
+
+        buttonForward.setOnClickListener(view -> {
+            player.seekTo(player.getCurrentPosition() + JUMP_VALUE);
+        });
+
+        buttonBackward.setOnClickListener(view -> {
+            player.seekTo(player.getCurrentPosition() - JUMP_VALUE);
+        });
+
+        chip.setOnClickListener(view -> {
+            if (playSpeed != 2f) {
+                playSpeed += 0.5f;
+            } else {
+                playSpeed = 0.5f;
+            }
+            player.setPlaybackParams(new PlaybackParams().setSpeed(playSpeed));
+            chip.setText("x " + playSpeed);
+        });
+
         playStart(dirPath);
-        seekBar.setMax(player.getDuration());
     }
 
     private void playStart(String dirPath) {
@@ -99,7 +119,7 @@ public class PlayerActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        seekBar.setMax(player.getDuration() / 1000); // where mFileDuration is mMediaPlayer.getDuration();
+        seekBar.setMax(player.getDuration() / 1000);
     }
 
     private void playStop() {
