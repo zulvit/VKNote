@@ -47,6 +47,20 @@ public class AdapterRecyclerNotes extends RecyclerView.Adapter<AdapterRecyclerNo
         }
     }
 
+    public void deleteItem(int position) {
+        Log.d(AdapterRecyclerNotes.class.getName(), notesArrayList.toString());
+        notesArrayList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public Notes getItem(int position) {
+        if (position < notesArrayList.size()) {
+            return notesArrayList.get(position);
+        } else {
+            return null;
+        }
+    }
+
     public static class CustomViewHolder extends RecyclerView.ViewHolder {
         TextView noteHeading;
         TextView noteDescription;

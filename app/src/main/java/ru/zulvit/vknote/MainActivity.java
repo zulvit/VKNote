@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this);
         View bottomSheetView = LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.bottom_sheet,
-                        (LinearLayout) findViewById(R.id.bottomSheetContainer));
+                        findViewById(R.id.bottomSheetContainer));
         bottomSheetDialog.setContentView(bottomSheetView);
         EditText editText = bottomSheetDialog.findViewById(R.id.editTextNoteName);
         assert editText != null;
@@ -176,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void recordStop() {
         chronometer.stop();
+        chronometer.setBase(SystemClock.elapsedRealtime());
         recorder.stop();
         recorder.release();
         recorder = null;
