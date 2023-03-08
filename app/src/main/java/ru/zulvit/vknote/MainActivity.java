@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
         return year + "-" + month + "-" + day + "(" +
-                hour + ":" + minute + ":" + second + ")";
+                hour + "-" + minute + "-" + second + ")";
     }
 
     private void recordStart() {
