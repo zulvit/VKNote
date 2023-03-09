@@ -3,7 +3,7 @@
   <label>Реализованные функции</label>
   <ul>
     <li><input type="checkbox">Запись заметок в память на локальном устройстве</li>
-    <li><input type="checkbox">RecyclerView для отображения вех заметок</li>
+    <li><input type="checkbox">RecyclerView для отображения всех заметок</li>
     <li><input type="checkbox">Таймер для отслеживания включения записи заметок</li>
     <li><input type="checkbox">Удаление заметок свайпом влево или вправо по экрану</li>
     <li><input type="checkbox">FloatingActionBar для начала и остановки записи</li>
@@ -13,7 +13,7 @@
     <label>Предстоит сделать</label>
   <ul>
     <li><input type="checkbox">Сохранение в базе данных при помощи Room database</li>
-    <li><input type="checkbox">Добавление анимации при включении записи диктофоно с помощью Canvas</li>
+    <li><input type="checkbox">Добавление анимации при включении записи диктофона с помощью Canvas</li>
     <li><input type="checkbox">Сохранение заметок у пользователя в документах в VK</li>
     <li><input type="checkbox">Языковая модель, обученная на TensorFlow и переведённая в lite-формат</li>
     <li><input type="checkbox">Добавление мультиязычности</li>
